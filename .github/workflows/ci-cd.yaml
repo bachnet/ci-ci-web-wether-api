@@ -15,6 +15,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
              dotnet-version: 8.0.x
+      - name: Start MySQL Server
+        run: 
+         docker run -d --name some-mysql -v /my/own/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=1234$ -d mysql:tag
+
+      - name: Sleep for 5 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+            time: '5s'
 
       - name: Restore dependencies 
         run: dotnet restore
@@ -23,4 +31,6 @@ jobs:
         run: dotnet build -c Release --no-restore 
       
       - name: Run test
+        env:
+          ConnectionStrings_DefaultConnection: server=127.0.0.1;uid=root;pwd=1234$;database=cicddemo;
         run: dotnet test -c Release --no-build
